@@ -1,6 +1,6 @@
 # MegaWarez
 
-##Taller de Sofka
+## Taller de Sofka
 
 La empresa de MegaWarez requiere organizar su catálogo de productos en una base de datos y poder ser consumida por medio de una API, teniendo en cuenta que cada usuario deberá identificarse correctamente.
 

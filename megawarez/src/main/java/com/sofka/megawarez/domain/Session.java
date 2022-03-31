@@ -14,7 +14,6 @@ import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.Instant;
 
-
 /**
  * Entidad de la Session
  *
@@ -44,21 +43,20 @@ public class Session implements Serializable {
      * Punto de enlace con la entidad Usuario (un usuario puede tener muchas sesiones)
      */
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = User.class, optional = false)
-    @JoinColumn(name = "ses_user_id", nullable = false)
+    @JoinColumn(name = "ses_user_id")
     @JsonBackReference
-    private User user;
+    private User sesUser;
 
     /**
      * Token del usuario
      */
-    @Column(name = "ses_token", nullable = false, length = 100)
+    @Column(name = "ses_token", nullable = false, length = 32)
     private String token;
 
     /**
      * Fecha y hora en que la tupla ha sido creada
      */
-    @Column(name = "use_created_at", nullable = false, updatable = false)
+    @Column(name = "ses_created_at", nullable = false)
     private Instant createdAt;
 
 }
-

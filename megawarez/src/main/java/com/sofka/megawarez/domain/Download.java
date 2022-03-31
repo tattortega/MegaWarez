@@ -14,7 +14,6 @@ import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.Instant;
 
-
 /**
  * Entidad de la descarga
  *
@@ -26,6 +25,7 @@ import java.time.Instant;
 @Entity
 @Table(name = "download")
 public class Download implements Serializable {
+
 
     /**
      * Variable usada para manejar el tema del identificador de la tupla (consecutivo)
@@ -41,27 +41,25 @@ public class Download implements Serializable {
     private Integer id;
 
     /**
-     * Fecha y hora en que la tupla ha sido creada
-     */
-    @Column(name = "dwn_created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
-    /**
      * Punto de enlace con la entidad Usuario (un usuario puede tener muchas descargas)
      */
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = User.class, optional = false)
-    @JoinColumn(name = "dwn_user_id", nullable = false)
+    @JoinColumn(name = "dwn_user_id")
     @JsonBackReference
-    private User user;
+    private User dwnUser;
 
     /**
      * Punto de enlace con la entidad Item (un item puede tener muchas descargas)
      */
-    @ManyToOne(fetch = FetchType.LAZY, targetEntity = User.class, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Item.class, optional = false)
     @JoinColumn(name = "dwn_item_id", nullable = false)
     @JsonBackReference
-    private Item item;
+    private Item dwnItem;
+
+    /**
+     * Fecha y hora en que la tupla ha sido creada
+     */
+    @Column(name = "dwn_created_at", nullable = false)
+    private Instant createdAt;
 
 }
-
-

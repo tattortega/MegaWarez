@@ -3,6 +3,7 @@ package com.sofka.megawarez.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
@@ -36,37 +37,40 @@ public class Item implements Serializable {
     private Integer id;
 
     /**
+     * Punto de enlace con la entidad Subcategoria (una subcategoria puede tener muchos items)
+     */
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Subcategory.class, optional = false)
+    @JoinColumn(name = "itm_subcategory_id", nullable = false)
+    @JsonBackReference
+    private Subcategory itmSubcategory;
+
+    /**
      * Nombre del item
      */
-    @Column(name = "itm_name", nullable = false, updatable = false)
-    private Instant item;
+    @Column(name = "itm_name", nullable = false, length = 80)
+    private String item;
 
     /**
      * Fecha y hora en que la tupla ha sido creada
      */
-    @Column(name = "itm_created_at", nullable = false, updatable = false)
+    @Column(name = "itm_created_at", nullable = false)
     private Instant createdAt;
 
     /**
-     * Punto de enlace con la entidad Subcategoria (una subcategoria puede tener muchos items)
+     * Fecha y hora en que la tupla ha sido actualizada
      */
-    @ManyToOne(fetch = FetchType.LAZY, targetEntity = User.class, optional = false)
-    @JoinColumn(name = "itm_subcategory_id", nullable = false)
-    @JsonBackReference
-    private Subcategory subcategory;
+    @Column(name = "itm_updated_at", nullable = false)
+    private Instant updatedAt;
 
     /**
      * Punto de enlace entre la entidad del Item y Descarga (un item puede tener muchas descargas)
      */
     @OneToMany(
             fetch = FetchType.EAGER,
-            targetEntity = Session.class,
+            targetEntity = Download.class,
             cascade = CascadeType.REMOVE,
-            mappedBy = "item"
-    )
+            mappedBy = "dwnItem")
     @JsonManagedReference
     private List<Download> downloads = new ArrayList<>();
 
 }
-
-

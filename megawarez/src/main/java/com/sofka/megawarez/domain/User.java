@@ -2,19 +2,14 @@ package com.sofka.megawarez.domain;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Entidad del Usuario
@@ -44,19 +39,19 @@ public class User implements Serializable {
     /**
      * Nombre del usuario
      */
-    @Column(name = "use_username", nullable = false, length = 100)
+    @Column(name = "use_username", nullable = false, length = 80)
     private String username;
 
     /**
      * Contraseña del usuario
      */
-    @Column(name = "use_password", nullable = false, length = 100)
+    @Column(name = "use_password", nullable = false, length = 32)
     private String password;
 
     /**
      * Fecha y hora en que la tupla ha sido creada
      */
-    @Column(name = "use_created_at", nullable = false, updatable = false)
+    @Column(name = "use_created_at", nullable = false)
     private Instant createdAt;
 
     /**
@@ -66,26 +61,25 @@ public class User implements Serializable {
     private Instant updatedAt;
 
     /**
+     * Punto de enlace entre la entidad del Usuario y Descarga (un usuario puede tener muchas descargas)
+     */
+    @OneToMany(
+            fetch = FetchType.EAGER,
+            targetEntity = Download.class,
+            cascade = CascadeType.REMOVE,
+            mappedBy = "dwnUser")
+    @JsonManagedReference
+    private List<Download> downloads = new ArrayList<>();
+
+    /**
      * Punto de enlace entre la entidad del Usuario y Sesion (un usuario puede tener muchas sesiones abiertas)
      */
     @OneToMany(
             fetch = FetchType.EAGER,
             targetEntity = Session.class,
             cascade = CascadeType.REMOVE,
-            mappedBy = "user"
-    )
+            mappedBy = "sesUser")
     @JsonManagedReference
-    private List<Session> sessions = new ArrayList<>();
+    private Set<Session> sessions = new LinkedHashSet<>();
 
-    /**
-     * Punto de enlace entre la entidad del Usuario y Descarga (un usuario puede tener muchas descargas)
-     */
-    @OneToMany(
-            fetch = FetchType.EAGER,
-            targetEntity = Session.class,
-            cascade = CascadeType.REMOVE,
-            mappedBy = "user"
-    )
-    @JsonManagedReference
-    private List<Download> downloads = new ArrayList<>();
 }

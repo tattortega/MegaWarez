@@ -1,5 +1,6 @@
 package com.sofka.megawarez.service;
 
+import com.sofka.megawarez.domain.Download;
 import com.sofka.megawarez.domain.User;
 import com.sofka.megawarez.repository.DownloadRepository;
 import com.sofka.megawarez.repository.SessionRepository;
@@ -168,5 +169,68 @@ public class UserService implements IUser {
         } else {
             return null;
         }
+    }
+
+
+    /**
+     * Devuelve una lista de Descargas del usuario
+     *
+     * @return
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<Download> getListDownload() {
+        List<Download> downloads = null;
+        try {
+            downloads = (List<Download>) downloadRepository.findAll();
+        } catch (Exception exc) {
+            throw exc;
+        }
+        return downloads;
+    }
+
+    /**
+     * Devuelve una descarga del usuario
+     *
+     * @return
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Download> findDownload(Download download) {
+        Optional<Download> downloads = Optional.empty();
+        try {
+            downloads = downloadRepository.findById(download.getId());
+        } catch (Exception exc) {
+            throw exc;
+        }
+        return downloads;
+    }
+
+    /**
+     * Crea una descarga para el usuario en el sistema
+     *
+     * @param download Objeto de la descarga a crear
+     * @return Objeto de la descarga creado
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    @Override
+    @Transactional
+    public Download createDownload(Download download) {
+        Download downloads = null;
+        try {
+            download.setCreatedAt(Instant.now());
+            downloads = downloadRepository.save(download);
+        } catch (Exception exc) {
+            throw exc;
+        }
+        return downloads;
     }
 }

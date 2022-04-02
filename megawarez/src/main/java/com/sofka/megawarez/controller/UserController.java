@@ -8,10 +8,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -94,7 +99,7 @@ public class UserController {
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    @GetMapping(path = "/api/v1/index")
+    @GetMapping(path = "/api/v1/users")
     public ResponseEntity<Response> index() {
         response.restart();
         try {
@@ -108,7 +113,7 @@ public class UserController {
 
 
     /**
-     * Administrador para la redirección al controllador /api/v1/index
+     * Administrador para la redirección al controllador /api/v1/users
      *
      * @param httpResponse Objeto HttpServletResponse para el manejo de la redirección
      * @return Objeto Response en formato JSON
@@ -119,7 +124,7 @@ public class UserController {
     private ResponseEntity<Response> getResponseHome(HttpServletResponse httpResponse) {
         response.restart();
         try {
-            httpResponse.sendRedirect("/api/v1/index");
+            httpResponse.sendRedirect("/api/v1/users");
         } catch (IOException exception) {
             response.error = true;
             response.data = exception.getCause();
@@ -159,7 +164,7 @@ public class UserController {
             var sqlErrorCode = sqlEx.getErrorCode();
             switch (sqlErrorCode) {
                 case 1062:
-                    response.message = "El dato ya está registrado";
+                    response.message = "El usuario ya está registrado";
                     break;
                 case 1452:
                     response.message = "El usuario indicado no existe";
@@ -201,33 +206,6 @@ public class UserController {
     }
 
     /**
-     * Actualiza el nombre de un usuario basado en su identificador
-     *
-     * @param user Objeto Usuario
-     * @param id Identificador del usuario a actualizar
-     * @return Objeto Response en formato JSON
-     *
-     * @author Ricardo Ortega <tattortega.28@gmail.com>
-     * @since 1.0.0
-     */
-    @PatchMapping(path = "/api/v1/user/{id}/username")
-    public ResponseEntity<Response> updateUsername(
-            @RequestBody User user,
-            @PathVariable(value="id") Integer id
-    ) {
-        response.restart();
-        try {
-            response.data = userService.updateUsername(id, user);
-            httpStatus = HttpStatus.OK;
-        } catch (DataAccessException exception) {
-            getErrorMessageForResponse(exception);
-        } catch (Exception exception) {
-            getErrorMessageInternal(exception);
-        }
-        return new ResponseEntity(response, httpStatus);
-    }
-
-    /**
      * Crea el token para el Usuario
      *
      * @param loginData
@@ -260,7 +238,7 @@ public class UserController {
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    @GetMapping(path = "/api/v1/ejemplo-token")
+    @GetMapping(path = "/api/v1/token")
     public ResponseEntity<Response> getToken(@RequestHeader("Authorization") String authorization) {
         response.restart();
         try {
@@ -274,17 +252,43 @@ public class UserController {
         }
         return new ResponseEntity(response, httpStatus);
     }
+    /**
+     * Actualiza el nombre de un usuario basado en su identificador
+     *
+     * @param user Objeto Usuario
+     * @param id Identificador del usuario a actualizar
+     * @return Objeto Response en formato JSON
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    @PatchMapping(path = "/api/v1/user/{id}/username")
+    public ResponseEntity<Response> updateUsername(
+            @RequestBody User user,
+            @PathVariable(value="id") Integer id
+    ) {
+        response.restart();
+        try {
+            response.data = userService.updateUsername(id, user);
+            httpStatus = HttpStatus.OK;
+        } catch (DataAccessException exception) {
+            getErrorMessageForResponse(exception);
+        } catch (Exception exception) {
+            getErrorMessageInternal(exception);
+        }
+        return new ResponseEntity(response, httpStatus);
+    }
 
-        /**
-         * Actualiza la contraseña de un usuario basado en su identificador
-         *
-         * @param user Objeto Usuario
-         * @param id Identificador del usuario a actualizar
-         * @return Objeto Response en formato JSON
-         *
-         * @author Ricardo Ortega <tattortega.28@gmail.com>
-         * @since 1.0.0
-         */
+    /**
+     * Actualiza la contraseña de un usuario basado en su identificador
+     *
+     * @param user Objeto Usuario
+     * @param id Identificador del usuario a actualizar
+     * @return Objeto Response en formato JSON
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
     @PatchMapping(path = "/api/v1/user/{id}/password")
     public ResponseEntity<Response> updatePassword(
             @RequestBody User user,

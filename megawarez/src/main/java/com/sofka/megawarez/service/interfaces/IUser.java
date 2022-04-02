@@ -1,5 +1,6 @@
 package com.sofka.megawarez.service.interfaces;
 
+import com.sofka.megawarez.domain.Download;
 import com.sofka.megawarez.domain.Item;
 import com.sofka.megawarez.domain.User;
 import org.springframework.data.domain.Sort;
@@ -82,4 +83,35 @@ public interface IUser {
      */
     User deleteUser(Integer id);
 
+
+    /**
+     * Devuelve una lista de Descargas del usuario
+     *
+     * @return
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    public List<Download> getListDownload();
+
+    /**
+     * Devuelve una descarga del sistema
+     *
+     * @return
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    public Optional<Download> findDownload(Download download);
+
+    /**
+     * Crea una descarga en el sistema
+     *
+     * @param download Objeto de la descarga a crear
+     * @return Objeto de la descarga creado
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    public Download createDownload(Download download);
 }

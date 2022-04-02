@@ -1,6 +1,8 @@
 package com.sofka.megawarez.service;
 
 import com.sofka.megawarez.domain.User;
+import com.sofka.megawarez.repository.DownloadRepository;
+import com.sofka.megawarez.repository.SessionRepository;
 import com.sofka.megawarez.repository.UserRepository;
 import com.sofka.megawarez.service.interfaces.IUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +24,22 @@ import java.util.Optional;
 public class UserService implements IUser {
 
     /**
-     * Repositorio de Usuarios
+     * Repositorio de Usuario
      */
     @Autowired
     private UserRepository userRepository;
+
+    /**
+     * Repositorio de Descarga
+     */
+    @Autowired
+    private DownloadRepository downloadRepository;
+
+    /**
+     * Repositorio de Session
+     */
+    @Autowired
+    private SessionRepository sessionRepository;
 
     /**
      * Devuelve una lista de Usuarios con todos usuarios del sistema
@@ -56,6 +70,7 @@ public class UserService implements IUser {
      * @since 1.0.0
      */
     @Override
+    @Transactional(readOnly = true)
     public Optional<User> findUser(User user) {
         Optional<User> users = Optional.empty();
         try {
@@ -76,11 +91,12 @@ public class UserService implements IUser {
      * @since 1.0.0
      */
     @Override
+    @Transactional
     public User createUser(User user) {
         User users = null;
         try {
-            users = userRepository.save(user);
             user.setCreatedAt(Instant.now());
+            users = userRepository.save(user);
         } catch (Exception exc) {
             throw exc;
         }
@@ -98,6 +114,7 @@ public class UserService implements IUser {
      * @since 1.0.0
      */
     @Override
+    @Transactional
     public User updateUsername(Integer id, User user) {
         try {
             user.setId(id);
@@ -120,6 +137,7 @@ public class UserService implements IUser {
      * @since 1.0.0
      */
     @Override
+    @Transactional
     public User updatePassword(Integer id, User user) {
         try {
             user.setId(id);
@@ -141,6 +159,7 @@ public class UserService implements IUser {
      * @since 1.0.0
      */
     @Override
+    @Transactional
     public User deleteUser(Integer id) {
         var user = userRepository.findById(id);
         if (user.isPresent()) {

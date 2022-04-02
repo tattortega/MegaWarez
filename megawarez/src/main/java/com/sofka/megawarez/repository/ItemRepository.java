@@ -1,12 +1,13 @@
 package com.sofka.megawarez.repository;
 
 import com.sofka.megawarez.domain.Item;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
-public interface ItemRepository extends CrudRepository<Item, Integer> {
+public interface ItemRepository extends JpaRepository<Item, Integer> {
 
     /**
      * Actualiza el nombre de un item basado en su identificador

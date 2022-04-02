@@ -1,8 +1,10 @@
 package com.sofka.megawarez.service.interfaces;
 
 import com.sofka.megawarez.domain.Item;
+import com.sofka.megawarez.domain.User;
 import org.springframework.data.domain.Sort;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Interface para el servicio de Productos
@@ -22,6 +24,16 @@ public interface IProduct {
      * @since 1.0.0
      */
     public List<Item> getList();
+
+    /**
+     * Devuelve un item del sistema
+     *
+     * @return
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    public Optional<Item> findItem(Item item);
 
     /**
      * Crea un item en el sistema

@@ -1,9 +1,7 @@
 package com.sofka.megawarez.service.interfaces;
 
 import com.sofka.megawarez.domain.Download;
-import com.sofka.megawarez.domain.Item;
 import com.sofka.megawarez.domain.User;
-import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +23,7 @@ public interface IUser {
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public List<User> getList();
+    public List<User> getListUser();
 
     /**
      * Devuelve un usuario del sistema

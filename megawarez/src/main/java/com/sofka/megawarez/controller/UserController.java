@@ -1,5 +1,6 @@
 package com.sofka.megawarez.controller;
 
+import com.sofka.megawarez.domain.Download;
 import com.sofka.megawarez.domain.User;
 import com.sofka.megawarez.service.UserService;
 import com.sofka.megawarez.utility.LoginData;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * Controlador para el Usuario
@@ -100,10 +102,10 @@ public class UserController {
      * @since 1.0.0
      */
     @GetMapping(path = "/api/v1/users")
-    public ResponseEntity<Response> index() {
+    public ResponseEntity<Response> users() {
         response.restart();
         try {
-            response.data = userService.getList();
+            response.data = userService.getListUser();
             httpStatus = HttpStatus.OK;
         } catch (Exception exception) {
             getErrorMessageInternal(exception);
@@ -195,8 +197,14 @@ public class UserController {
         response.restart();
         try {
             log.info("Usuario a crear: {}", user);
-            response.data = userService.createUser(user);
-            httpStatus = HttpStatus.CREATED;
+            Optional<User> u = this.userService.findByUsername(user.getUsername());
+            if (!u.isPresent()) {
+                response.data = userService.createUser(user);
+                response.message = "El usuario se ha registrado correctamente";
+                httpStatus = HttpStatus.CREATED;
+            } else {
+                response.message = "El usuario ya se encuentra registrado";
+            }
         } catch (DataAccessException exception) {
             getErrorMessageForResponse(exception);
         } catch (Exception exception) {
@@ -335,4 +343,73 @@ public class UserController {
         }
         return new ResponseEntity(response, httpStatus);
     }
+
+
+
+    /**
+     * Index de descargas, responde con el listado de descargas
+     *
+     * @return Objeto Response en formato JSON
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    @GetMapping(path = "/api/v1/downloads")
+    public ResponseEntity<Response> download() {
+        response.restart();
+        try {
+            response.data = userService.getListDownload();
+            httpStatus = HttpStatus.OK;
+        } catch (Exception exception) {
+            getErrorMessageInternal(exception);
+        }
+        return new ResponseEntity(response, httpStatus);
+    }
+
+    /**
+     * Obtiene una descarga segun el identificador
+     *
+     * @return Objeto Response en formato JSON
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     * @param id
+     */
+    @GetMapping(path = "/api/v1/download/{id}")
+    public ResponseEntity<Response> findDownload(@PathVariable(value="id") Download id) {
+        response.restart();
+        try {
+            response.data = userService.findDownload(id);
+            httpStatus = HttpStatus.OK;
+        } catch (Exception exception) {
+            getErrorMessageInternal(exception);
+        }
+        return new ResponseEntity(response, httpStatus);
+    }
+
+    /**
+     * Crea una nueva descarga en el sistema
+     *
+     * @param download Objeto descarga a crear
+     * @return Objeto Response en formato JSON
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    @PostMapping(path = "/api/v1/download")
+    public ResponseEntity<Response> createDownload(@RequestBody Download download) {
+        response.restart();
+        try {
+            log.info("Descarga a crear: {}", download);
+            response.data = userService.createDownload(download);
+            httpStatus = HttpStatus.CREATED;
+        } catch (DataAccessException exception) {
+            getErrorMessageForResponse(exception);
+        } catch (Exception exception) {
+            getErrorMessageInternal(exception);
+        }
+        return new ResponseEntity(response, httpStatus);
+    }
+
+
 }

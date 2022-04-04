@@ -1,6 +1,7 @@
 package com.sofka.megawarez.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
@@ -56,19 +57,14 @@ public class Subcategory implements Serializable {
     private Instant createdAt;
 
     /**
-     * Fecha y hora en que la tupla ha sido actualizada
-     */
-    @Column(name = "scat_updated_at", nullable = false)
-    private Instant updatedAt;
-
-    /**
-     * Punto de enlace entre la entidad de Subcategoria E Item (una subcategoria puede tener muchos items)
+     * Punto de enlace entre la entidad de Subcategoria y Producto (una subcategoria puede tener muchos productos)
      */
     @OneToMany(fetch = FetchType.EAGER,
-            targetEntity = Item.class,
+            targetEntity = Product.class,
             cascade = CascadeType.REMOVE,
-            mappedBy = "itmSubcategory")
+            mappedBy = "prdSubcategory")
     @JsonManagedReference
-    private List<Item> items = new ArrayList<>();
+    @JsonIgnore
+    private List<Product> products = new ArrayList<>();
 
 }

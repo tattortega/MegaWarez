@@ -1,9 +1,8 @@
 package com.sofka.megawarez.service.interfaces;
 
 import com.sofka.megawarez.domain.Category;
-import com.sofka.megawarez.domain.Item;
+import com.sofka.megawarez.domain.Product;
 import com.sofka.megawarez.domain.Subcategory;
-import com.sofka.megawarez.domain.User;
 import org.springframework.data.domain.Sort;
 import java.util.List;
 import java.util.Optional;
@@ -18,51 +17,51 @@ import java.util.Optional;
 public interface IProduct {
 
     /**
-     * Devuelve una lista de items con todos los items del sistema
+     * Devuelve una lista de productos del sistema
      *
      * @return
      *
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public List<Item> getListItem();
+    public List<Product> getListProducts();
 
     /**
-     * Devuelve un item del sistema
+     * Devuelve un producto del sistema
      *
      * @return
      *
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public Optional<Item> findItem(Item item);
+    public Optional<Product> findProduct(Product product);
 
     /**
-     * Crea un item en el sistema
+     * Crea un producto en el sistema
      *
-     * @param item Objeto del item a crear
-     * @return Objeto del item creado
+     * @param product Objeto del producto a crear
+     * @return Objeto del producto creado
      *
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public Item createItem(Item item);
+    public Product createProduct(Product product);
 
     /**
-     * Devuelve una lista de items con todos items del sistema ordenados por el campo indicado
+     * Devuelve una lista de productos del sistema ordenados por el campo indicado
      * (nombre o fecha) ya sea ascendente o descendente
      *
      * @param field campo por el cual ordenar
      * @param order método de ordenado ASC o DESC
-     * @return Lista de contactos
+     * @return Lista de productos
      *
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public List<Item> getItemOrdered(String field, Sort.Direction order);
+    public List<Product> getProductOrdered(String field, Sort.Direction order);
 
     /**
-     * Busca un dato dado entre el nombrede un prodcuto
+     * Busca un dato dado entre el nombre de un producto
      *
      * @param dataToSearch Dato a buscar
      * @return Lita de productos
@@ -70,30 +69,30 @@ public interface IProduct {
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public List<Item> searchItem(String dataToSearch);
+    public List<Product> searchProduct(String dataToSearch);
 
     /**
-     * Actualiza el nombre de un item basado en su identificador
+     * Actualiza el nombre de un producto basado en su identificador
      *
-     * @param id Identificador del item a actualizar
-     * @param item Objeto del item a actualizar
-     * @return Objeto del item actualizado
+     * @param id Identificador del producto a actualizar
+     * @param product Objeto del producto a actualizar
+     * @return Objeto del producto actualizado
      *
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public Item updateItem(Integer id, Item item);
+    public Product updateProduct(Integer id, Product product);
 
     /**
-     * Borra un item del sistema basado en su identificador
+     * Borra un producto del sistema basado en su identificador
      *
-     * @param id Identificación del item a borrar
-     * @return Objeto del item borrado
+     * @param id Identificación del producto a borrar
+     * @return Objeto del producto borrado
      *
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    Item deleteItem(Integer id);
+    Product deleteProduct(Integer id);
 
 
     /**
@@ -139,18 +138,6 @@ public interface IProduct {
      * @since 1.0.0
      */
     public List<Category> getCategoryOrdered(String field, Sort.Direction order);
-
-    /**
-     * Actualiza el nombre de una categoria basado en su identificador
-     *
-     * @param id Identificador de la categoria a actualizar
-     * @param category Objeto de la categoria a actualizar
-     * @return Objeto de la categoria actualizado
-     *
-     * @author Ricardo Ortega <tattortega.28@gmail.com>
-     * @since 1.0.0
-     */
-    public Category updateCategory(Integer id, Category category);
 
     /**
      * Borra una categoria del sistema basado en su identificador
@@ -207,18 +194,6 @@ public interface IProduct {
      * @since 1.0.0
      */
     public List<Subcategory> getSubcategoryOrdered(String field, Sort.Direction order);
-
-    /**
-     * Actualiza el nombre de una subcategoria basado en su identificador
-     *
-     * @param id Identificador de la subcategoria a actualizar
-     * @param subcategory Objeto de la subcategoria a actualizar
-     * @return Objeto de la subcategoria actualizado
-     *
-     * @author Ricardo Ortega <tattortega.28@gmail.com>
-     * @since 1.0.0
-     */
-    public Subcategory updateSubcategory(Integer id, Subcategory subcategory);
 
     /**
      * Borra una subcategoria del sistema basado en su identificador

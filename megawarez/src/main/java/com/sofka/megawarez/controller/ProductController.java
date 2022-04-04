@@ -1,6 +1,8 @@
 package com.sofka.megawarez.controller;
 
-import com.sofka.megawarez.domain.Item;
+import com.sofka.megawarez.domain.Category;
+import com.sofka.megawarez.domain.Product;
+import com.sofka.megawarez.domain.Subcategory;
 import com.sofka.megawarez.service.ProductService;
 import com.sofka.megawarez.utility.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +29,7 @@ public class ProductController {
 
 
     /**
-     * Servicio para el manejo de Item
+     * Servicio para el manejo de Producto
      */
     @Autowired
     private ProductService productService;
@@ -44,44 +46,21 @@ public class ProductController {
 
 
     /**
-     * Index del sistema, responde con el listado de items
+     * Index de productos, responde con el listado de productos
      *
      * @return Objeto Response en formato JSON
      *
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    @GetMapping(path = "/api/v1/items")
+    @GetMapping(path = "/api/v1/products")
     public ResponseEntity<Response> index() {
         response.restart();
         try {
-            response.data = productService.getListItem();
+            response.data = productService.getListProducts();
             httpStatus = HttpStatus.OK;
         } catch (Exception exception) {
             getErrorMessageInternal(exception);
-        }
-        return new ResponseEntity(response, httpStatus);
-    }
-
-
-    /**
-     * Administrador para la redirección al controllador /api/v1/index
-     *
-     * @param httpResponse Objeto HttpServletResponse para el manejo de la redirección
-     * @return Objeto Response en formato JSON
-     *
-     * @author Ricardo Ortega <tattortega.28@gmail.com>
-     * @since 1.0.0
-     */
-    private ResponseEntity<Response> getResponseHome(HttpServletResponse httpResponse) {
-        response.restart();
-        try {
-            httpResponse.sendRedirect("/api/v1/items");
-        } catch (IOException exception) {
-            response.error = true;
-            response.data = exception.getCause();
-            response.message = exception.getMessage();
-            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         }
         return new ResponseEntity(response, httpStatus);
     }
@@ -116,10 +95,10 @@ public class ProductController {
             var sqlErrorCode = sqlEx.getErrorCode();
             switch (sqlErrorCode) {
                 case 1062:
-                    response.message = "El usuario ya está registrado";
+                    response.message = "El dato ya está registrado";
                     break;
                 case 1452:
-                    response.message = "El usuario indicado no existe";
+                    response.message = "El dato indicado no existe";
                     break;
                 default:
                     response.message = exception.getMessage();
@@ -134,20 +113,20 @@ public class ProductController {
     }
 
     /**
-     * Crea un nuevo item en el sistema
+     * Crea un nuevo producto en el sistema
      *
-     * @param item Objeto Item a crear
+     * @param product Objeto producto a crear
      * @return Objeto Response en formato JSON
      *
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    @PostMapping(path = "/api/v1/item")
-    public ResponseEntity<Response> createItem(@RequestBody Item item) {
+    @PostMapping(path = "/api/v1/product")
+    public ResponseEntity<Response> createProduct(@RequestBody Product product) {
         response.restart();
         try {
-            log.info("Item a crear: {}", item);
-            response.data = productService.createItem(item);
+            log.info("Producto a crear: {}", product);
+            response.data = productService.createProduct(product);
             httpStatus = HttpStatus.CREATED;
         } catch (DataAccessException exception) {
             getErrorMessageForResponse(exception);
@@ -158,23 +137,23 @@ public class ProductController {
     }
 
     /**
-     * Actualiza el nombre de un item basado en su identificador
+     * Actualiza el nombre de un producto basado en su identificador
      *
-     * @param item Objeto Item
-     * @param id Identificador del item a actualizar
+     * @param product Objeto producto
+     * @param id Identificador del producto a actualizar
      * @return Objeto Response en formato JSON
      *
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    @PatchMapping(path = "/api/v1/item/{id}/item")
-    public ResponseEntity<Response> updateItem(
-            @RequestBody Item item,
+    @PatchMapping(path = "/api/v1/product/{id}/product")
+    public ResponseEntity<Response> updateProduct(
+            @RequestBody Product product,
             @PathVariable(value="id") Integer id
     ) {
         response.restart();
         try {
-            response.data = productService.updateItem(id, item);
+            response.data = productService.updateProduct(id, product);
             httpStatus = HttpStatus.OK;
         } catch (DataAccessException exception) {
             getErrorMessageForResponse(exception);
@@ -185,23 +164,23 @@ public class ProductController {
     }
 
     /**
-     * Actualiza la subcategoria de un item basado en su identificador
+     * Actualiza la subcategoria de un producto basado en su identificador
      *
-     * @param item Objeto Item
+     * @param product Objeto producto
      * @param id Identificador del usuario a actualizar
      * @return Objeto Response en formato JSON
      *
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    @PatchMapping(path = "/api/v1/item/{id}/subcategory")
-    public ResponseEntity<Response> updateSubcategory(
-            @RequestBody Item item,
+    @PatchMapping(path = "/api/v1/product/{id}/subcategory")
+    public ResponseEntity<Response> updateProductSubcategory(
+            @RequestBody Product product,
             @PathVariable(value="id") Integer id
     ) {
         response.restart();
         try {
-            response.data = productService.updateItem(id, item);
+            response.data = productService.updateProduct(id, product);
             httpStatus = HttpStatus.OK;
         } catch (DataAccessException exception) {
             getErrorMessageForResponse(exception);
@@ -213,24 +192,24 @@ public class ProductController {
 
 
     /**
-     * Borra un item del sistema
+     * Borra un producto del sistema
      *
-     * @param id Identificador del item a borrar
+     * @param id Identificador del producto a borrar
      * @return Objeto Response en formato JSON
      *
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    @DeleteMapping(path = "/api/v1/item/{id}")
-    public ResponseEntity<Response> deleteItem(@PathVariable(value="id") Integer id) {
+    @DeleteMapping(path = "/api/v1/product/{id}")
+    public ResponseEntity<Response> deleteProduct(@PathVariable(value="id") Integer id) {
         response.restart();
         try {
-            response.data = productService.deleteItem(id);
+            response.data = productService.deleteProduct(id);
             if (response.data == null) {
-                response.message = "El item no existe";
+                response.message = "El producto no existe";
                 httpStatus = HttpStatus.NOT_FOUND;
             } else {
-                response.message = "El item fue removido exitosamente";
+                response.message = "El producto fue removido exitosamente";
                 httpStatus = HttpStatus.OK;
             }
         } catch (DataAccessException exception) {
@@ -252,14 +231,14 @@ public class ProductController {
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    @GetMapping(path = "/api/v1/items/orderby/{orderBy}/{order}")
+    @GetMapping(path = "/api/v1/products/orderby/{orderBy}/{order}")
     public ResponseEntity<Response> indexOrderBy(
             @PathVariable(value="orderBy") String orderBy,
             @PathVariable(value="order") Sort.Direction order
     ) {
         response.restart();
         try {
-            response.data = productService.getItemOrdered(orderBy, order);
+            response.data = productService.getProductOrdered(orderBy, order);
             httpStatus = HttpStatus.OK;
         } catch (Exception exception) {
             getErrorMessageInternal(exception);
@@ -276,13 +255,13 @@ public class ProductController {
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    @GetMapping(path = "/api/v1/search/item/{dataToSearch}")
-    public ResponseEntity<Response> searchItem(
+    @GetMapping(path = "/api/v1/search/product/{dataToSearch}")
+    public ResponseEntity<Response> searchProduct(
             @PathVariable(value="dataToSearch") String dataToSearch
     ) {
         response.restart();
         try {
-            response.data = productService.searchItem(dataToSearch);
+            response.data = productService.searchProduct(dataToSearch);
             httpStatus = HttpStatus.OK;
         } catch (Exception exception) {
             getErrorMessageInternal(exception);
@@ -291,4 +270,153 @@ public class ProductController {
     }
 
 
+
+    /**
+     * Index de categorias, responde con el listado de categorias
+     *
+     * @return Objeto Response en formato JSON
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    @GetMapping(path = "/api/v1/category")
+    public ResponseEntity<Response> category() {
+        response.restart();
+        try {
+            response.data = productService.getListCategory();
+            httpStatus = HttpStatus.OK;
+        } catch (Exception exception) {
+            getErrorMessageInternal(exception);
+        }
+        return new ResponseEntity(response, httpStatus);
+    }
+
+    /**
+     * Crea una nueva categoria en el sistema
+     *
+     * @param category Objeto categoria a crear
+     * @return Objeto Response en formato JSON
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    @PostMapping(path = "/api/v1/category")
+    public ResponseEntity<Response> createCategory(@RequestBody Category category) {
+        response.restart();
+        try {
+            log.info("Categoria a crear: {}", category);
+            response.data = productService.createCategory(category);
+            httpStatus = HttpStatus.CREATED;
+        } catch (DataAccessException exception) {
+            getErrorMessageForResponse(exception);
+        } catch (Exception exception) {
+            getErrorMessageInternal(exception);
+        }
+        return new ResponseEntity(response, httpStatus);
+    }
+
+
+    /**
+     * Borra una categoria del sistema
+     *
+     * @param id Identificador de la categoria a borrar
+     * @return Objeto Response en formato JSON
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    @DeleteMapping(path = "/api/v1/category/{id}")
+    public ResponseEntity<Response> deleteCategory(@PathVariable(value="id") Integer id) {
+        response.restart();
+        try {
+            response.data = productService.deleteCategory(id);
+            if (response.data == null) {
+                response.message = "La categoria no existe";
+                httpStatus = HttpStatus.NOT_FOUND;
+            } else {
+                response.message = "La categoria fue removido exitosamente";
+                httpStatus = HttpStatus.OK;
+            }
+        } catch (DataAccessException exception) {
+            getErrorMessageForResponse(exception);
+        } catch (Exception exception) {
+            getErrorMessageInternal(exception);
+        }
+        return new ResponseEntity(response, httpStatus);
+    }
+
+
+
+    /**
+     * Index de subcategorias, responde con el listado de subcategorias
+     *
+     * @return Objeto Response en formato JSON
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    @GetMapping(path = "/api/v1/subcategory")
+    public ResponseEntity<Response> subcategory() {
+        response.restart();
+        try {
+            response.data = productService.getListSubcategory();
+            httpStatus = HttpStatus.OK;
+        } catch (Exception exception) {
+            getErrorMessageInternal(exception);
+        }
+        return new ResponseEntity(response, httpStatus);
+    }
+
+    /**
+     * Crea una nueva subcategoria en el sistema
+     *
+     * @param subcategory Objeto subcategoria a crear
+     * @return Objeto Response en formato JSON
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    @PostMapping(path = "/api/v1/subcategory")
+    public ResponseEntity<Response> createSubcategory(@RequestBody Subcategory subcategory) {
+        response.restart();
+        try {
+            log.info("Subcategoria a crear: {}", subcategory);
+            response.data = productService.createSubcategory(subcategory);
+            httpStatus = HttpStatus.CREATED;
+        } catch (DataAccessException exception) {
+            getErrorMessageForResponse(exception);
+        } catch (Exception exception) {
+            getErrorMessageInternal(exception);
+        }
+        return new ResponseEntity(response, httpStatus);
+    }
+
+    /**
+     * Borra una subcategoria del sistema
+     *
+     * @param id Identificador de la subcategoria a borrar
+     * @return Objeto Response en formato JSON
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    @DeleteMapping(path = "/api/v1/subcategory/{id}")
+    public ResponseEntity<Response> deleteSubcategory(@PathVariable(value="id") Integer id) {
+        response.restart();
+        try {
+            response.data = productService.deleteSubcategory(id);
+            if (response.data == null) {
+                response.message = "La subcategoria no existe";
+                httpStatus = HttpStatus.NOT_FOUND;
+            } else {
+                response.message = "La subcategoria fue removido exitosamente";
+                httpStatus = HttpStatus.OK;
+            }
+        } catch (DataAccessException exception) {
+            getErrorMessageForResponse(exception);
+        } catch (Exception exception) {
+            getErrorMessageInternal(exception);
+        }
+        return new ResponseEntity(response, httpStatus);
+    }
 }

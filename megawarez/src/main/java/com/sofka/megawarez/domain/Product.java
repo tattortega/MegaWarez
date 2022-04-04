@@ -4,8 +4,17 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
-
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -13,7 +22,7 @@ import java.util.List;
 
 
 /**
- * Entidad del item
+ * Entidad del producto
  *
  * @version 1.0.0 2022-03-31
  * @author Ricardo Ortega <tattortega.28@gmail.com>
@@ -21,8 +30,8 @@ import java.util.List;
  */
 @Data
 @Entity
-@Table(name = "item")
-public class Item implements Serializable {
+@Table(name = "product")
+public class Product implements Serializable {
 
     /**
      * Variable usada para manejar el tema del identificador de la tupla (consecutivo)
@@ -34,47 +43,46 @@ public class Item implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "itm_id", nullable = false)
+    @Column(name = "prd_id", nullable = false)
     private Integer id;
 
     /**
-     * Punto de enlace con la entidad Subcategoria (una subcategoria puede tener muchos items)
+     * Punto de enlace con la entidad Subcategoria (una subcategoria puede tener muchos productos)
      */
     @ManyToOne(
             fetch = FetchType.LAZY,
             targetEntity = Subcategory.class,
             optional = false)
-    @JoinColumn(name = "itm_subcategory_id", nullable = false)
+    @JoinColumn(name = "prd_subcategory_id", nullable = false)
     @JsonBackReference
-    @JsonIgnore
-    private Subcategory itmSubcategory;
+    private Subcategory prdSubcategory;
 
     /**
-     * Nombre del item
+     * Nombre del producto
      */
-    @Column(name = "itm_name", nullable = false, length = 80)
-    private String item;
+    @Column(name = "prd_name", nullable = false, length = 80)
+    private String product;
 
     /**
      * Fecha y hora en que la tupla ha sido creada
      */
-    @Column(name = "itm_created_at", nullable = false)
+    @Column(name = "prd_created_at", nullable = false)
     private Instant createdAt;
 
     /**
      * Fecha y hora en que la tupla ha sido actualizada
      */
-    @Column(name = "itm_updated_at", nullable = false)
+    @Column(name = "prd_updated_at")
     private Instant updatedAt;
 
     /**
-     * Punto de enlace entre la entidad del Item y Descarga (un item puede tener muchas descargas)
+     * Punto de enlace entre la entidad del Producto y Descarga (un producto puede tener muchas descargas)
      */
     @OneToMany(
             fetch = FetchType.EAGER,
             targetEntity = Download.class,
             cascade = CascadeType.REMOVE,
-            mappedBy = "dwnItem")
+            mappedBy = "dwnProduct")
     @JsonManagedReference
     @JsonIgnore
     private List<Download> downloads = new ArrayList<>();

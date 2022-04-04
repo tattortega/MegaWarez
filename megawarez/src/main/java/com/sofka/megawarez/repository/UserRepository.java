@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 /**
  * Repositorio para la entidad Usuario
  *
@@ -41,4 +43,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Modifying
     @Query(value = "update User use set use.password = :password, use.updatedAt = CURRENT_TIMESTAMP where use.id = :id")
     public void updatePassword(@Param(value = "id") Integer id, @Param(value = "password") String password);
+
+    public Optional<User> findByUsername(String username);
+
 }

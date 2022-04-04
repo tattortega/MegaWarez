@@ -1,6 +1,7 @@
 package com.sofka.megawarez.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -49,12 +50,12 @@ public class Download implements Serializable {
     private User dwnUser;
 
     /**
-     * Punto de enlace con la entidad Item (un item puede tener muchas descargas)
+     * Punto de enlace con la entidad Producto (un producto puede tener muchas descargas)
      */
-    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Item.class, optional = false)
-    @JoinColumn(name = "dwn_item_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Product.class, optional = false)
+    @JoinColumn(name = "dwn_product_id", nullable = false)
     @JsonBackReference
-    private Item dwnItem;
+    private Product dwnProduct;
 
     /**
      * Fecha y hora en que la tupla ha sido creada

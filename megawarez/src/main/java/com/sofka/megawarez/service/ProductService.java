@@ -1,10 +1,10 @@
 package com.sofka.megawarez.service;
 
 import com.sofka.megawarez.domain.Category;
-import com.sofka.megawarez.domain.Item;
+import com.sofka.megawarez.domain.Product;
 import com.sofka.megawarez.domain.Subcategory;
 import com.sofka.megawarez.repository.CategoryRepository;
-import com.sofka.megawarez.repository.ItemRepository;
+import com.sofka.megawarez.repository.ProductRepository;
 import com.sofka.megawarez.repository.SubcategoryRepository;
 import com.sofka.megawarez.service.interfaces.IProduct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class ProductService implements IProduct {
      * Repositorio de Item
      */
     @Autowired
-    private ItemRepository itemRepository;
+    private ProductRepository productRepository;
 
     /**
      * Repositorio de Categoria
@@ -38,7 +38,7 @@ public class ProductService implements IProduct {
     private SubcategoryRepository subcategoryRepository;
 
     /**
-     * Devuelve una lista de Items con todos items del sistema
+     * Devuelve una lista de productos del sistema
      *
      * @return
      *
@@ -47,18 +47,18 @@ public class ProductService implements IProduct {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<Item> getListItem() {
-        List<Item> items = null;
+    public List<Product> getListProducts() {
+        List<Product> products = null;
         try {
-            items = (List<Item>) itemRepository.findAll();
+            products = (List<Product>) productRepository.findAll();
         } catch (Exception exc) {
             throw exc;
         }
-        return items;
+        return products;
     }
 
     /**
-     * Devuelve un item del sistema
+     * Devuelve un producto del sistema
      *
      * @return
      *
@@ -67,53 +67,53 @@ public class ProductService implements IProduct {
      */
     @Override
     @Transactional(readOnly = true)
-    public Optional<Item> findItem(Item item) {
-        Optional<Item> items = Optional.empty();
+    public Optional<Product> findProduct(Product product) {
+        Optional<Product> products = Optional.empty();
         try {
-            items = itemRepository.findById(item.getId());
+            products = productRepository.findById(product.getId());
         } catch (Exception exc) {
             throw exc;
         }
-        return items;
+        return products;
     }
 
     /**
-     * Crea un item en el sistema
+     * Crea un producto en el sistema
      *
-     * @param item Objeto del item a crear
-     * @return Objeto del item creado
+     * @param product Objeto del producto a crear
+     * @return Objeto del producto creado
      *
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
     @Override
     @Transactional
-    public Item createItem(Item item) {
-        Item items = null;
+    public Product createProduct(Product product) {
+        Product products = null;
         try {
-            item.setCreatedAt(Instant.now());
-            items = itemRepository.save(item);
+            product.setCreatedAt(Instant.now());
+            products = productRepository.save(product);
         } catch (Exception exc) {
             throw exc;
         }
-        return items;
+        return products;
     }
 
     /**
-     * Devuelve una lista de Items con todos items del sistema ordenados por el campo indicado ya sea ascendente
+     * Devuelve una lista de productos del sistema ordenados por el campo indicado ya sea ascendente
      * o descendete
      *
      * @param field campo por el cual ordenar
      * @param order método de ordenado ASC o DESC
-     * @return Lista de items
+     * @return Lista de productos
      *
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
     @Override
     @Transactional(readOnly = true)
-    public List<Item> getItemOrdered(String field, Sort.Direction order) {
-        return itemRepository.findAll(Sort.by(order, field));
+    public List<Product> getProductOrdered(String field, Sort.Direction order) {
+        return productRepository.findAll(Sort.by(order, field));
     }
 
     /**
@@ -127,56 +127,56 @@ public class ProductService implements IProduct {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<Item> searchItem(String dataToSearch) {
-        var item1 = itemRepository.findByNombreStartingWith(dataToSearch);
-        var item2 = itemRepository.findByNombreContains(dataToSearch);
-        var item3 = itemRepository.findByNombreEndingWith(dataToSearch);
-        var answer = new HashSet<Item>();
-        answer.addAll(item1);
-        answer.addAll(item2);
-        answer.addAll(item3);
+    public List<Product> searchProduct(String dataToSearch) {
+        var product1 = productRepository.findByNombreStartingWith(dataToSearch);
+        var product2 = productRepository.findByNombreContains(dataToSearch);
+        var product3 = productRepository.findByNombreEndingWith(dataToSearch);
+        var answer = new HashSet<Product>();
+        answer.addAll(product1);
+        answer.addAll(product2);
+        answer.addAll(product3);
         return answer.stream().toList();
     }
 
     /**
-     * Actualiza el nombre de un item
+     * Actualiza el nombre de un producto
      *
-     * @param id Identificador del item a actualizar
-     * @param item Objeto del item a actualizar
-     * @return Objeto del item actualizado
+     * @param id Identificador del producto a actualizar
+     * @param product Objeto del producto a actualizar
+     * @return Objeto del producto actualizado
      *
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
     @Override
     @Transactional
-    public Item updateItem(Integer id, Item item) {
+    public Product updateProduct(Integer id, Product product) {
         try {
-            item.setId(id);
-            item.setUpdatedAt(Instant.now());
-            itemRepository.updateItem(id, item.getItem());
+            product.setId(id);
+            product.setUpdatedAt(Instant.now());
+            productRepository.updateProduct(id, product.getProduct());
         } catch (Exception exc) {
             throw exc;
         }
-        return item;
+        return product;
     }
 
     /**
-     * Borra un item del sistema
+     * Borra un producto del sistema
      *
-     * @param id Identificación del item a borrar
-     * @return Objeto del item borrado
+     * @param id Identificación del producto a borrar
+     * @return Objeto del producto borrado
      *
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
     @Override
     @Transactional
-    public Item deleteItem(Integer id) {
-        var item = itemRepository.findById(id);
-        if (item.isPresent()) {
-            itemRepository.delete(item.get());
-            return item.get();
+    public Product deleteProduct(Integer id) {
+        var product = productRepository.findById(id);
+        if (product.isPresent()) {
+            productRepository.delete(product.get());
+            return product.get();
         } else {
             return null;
         }
@@ -236,8 +236,8 @@ public class ProductService implements IProduct {
     public Category createCategory(Category category) {
         Category categories = null;
         try {
+            category.setCreatedAt(Instant.now());
             categories = categoryRepository.save(category);
-            categories.setCreatedAt(Instant.now());
         } catch (Exception exc) {
             throw exc;
         }
@@ -259,29 +259,6 @@ public class ProductService implements IProduct {
     @Transactional(readOnly = true)
     public List<Category> getCategoryOrdered(String field, Sort.Direction order) {
         return categoryRepository.findAll(Sort.by(order, field));
-    }
-
-    /**
-     * Actualiza el nombre de una categoria
-     *
-     * @param id Identificador de la categoria a actualizar
-     * @param category Objeto de la categoria a actualizar
-     * @return Objeto de la categoria actualizado
-     *
-     * @author Ricardo Ortega <tattortega.28@gmail.com>
-     * @since 1.0.0
-     */
-    @Override
-    @Transactional
-    public Category updateCategory(Integer id, Category category) {
-        try {
-            category.setId(id);
-            category.setUpdatedAt(Instant.now());
-            categoryRepository.updateCategory(id, category.getCategory());
-        } catch (Exception exc) {
-            throw exc;
-        }
-        return category;
     }
 
     /**
@@ -360,8 +337,8 @@ public class ProductService implements IProduct {
     public Subcategory createSubcategory(Subcategory subcategory) {
         Subcategory subcategories = null;
         try {
+            subcategory.setCreatedAt(Instant.now());
             subcategories = subcategoryRepository.save(subcategory);
-            subcategories.setCreatedAt(Instant.now());
         } catch (Exception exc) {
             throw exc;
         }
@@ -383,29 +360,6 @@ public class ProductService implements IProduct {
     @Transactional(readOnly = true)
     public List<Subcategory> getSubcategoryOrdered(String field, Sort.Direction order) {
         return subcategoryRepository.findAll(Sort.by(order, field));
-    }
-
-    /**
-     * Actualiza el nombre de una subcategoria
-     *
-     * @param id Identificador de la subcategoria a actualizar
-     * @param subcategory Objeto de la subcategoria a actualizar
-     * @return Objeto de la subcategoria actualizado
-     *
-     * @author Ricardo Ortega <tattortega.28@gmail.com>
-     * @since 1.0.0
-     */
-    @Override
-    @Transactional
-    public Subcategory updateSubcategory(Integer id, Subcategory subcategory) {
-        try {
-            subcategory.setId(id);
-            subcategory.setUpdatedAt(Instant.now());
-            subcategoryRepository.updateSubcategory(id, subcategory.getSubcategory());
-        } catch (Exception exc) {
-            throw exc;
-        }
-        return subcategory;
     }
 
     /**

@@ -52,7 +52,7 @@ public class UserService implements IUser {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<User> getList() {
+    public List<User> getListUser() {
         List<User> users = null;
         try {
             users = (List<User>) userRepository.findAll();
@@ -80,6 +80,10 @@ public class UserService implements IUser {
             throw exc;
         }
         return users;
+    }
+
+    public Optional<User> findByUsername(String username){
+        return this.userRepository.findByUsername(username);
     }
 
     /**

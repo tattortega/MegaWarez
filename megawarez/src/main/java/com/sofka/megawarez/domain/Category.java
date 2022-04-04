@@ -1,5 +1,6 @@
 package com.sofka.megawarez.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
@@ -47,12 +48,6 @@ public class Category implements Serializable {
     private Instant createdAt;
 
     /**
-     * Fecha y hora en que la tupla ha sido actualizada
-     */
-    @Column(name = "cat_updated_at", nullable = false)
-    private Instant updatedAt;
-
-    /**
      * Punto de enlace entre la entidad de Categoria y Subcategoria (una categoria puede tener muchas subcategorias)
      */
     @OneToMany(fetch = FetchType.EAGER,
@@ -60,6 +55,7 @@ public class Category implements Serializable {
             cascade = CascadeType.REMOVE,
             mappedBy = "scatCategory")
     @JsonManagedReference
+    @JsonIgnore
     private List<Subcategory> subcategories = new ArrayList<>();
 
 }

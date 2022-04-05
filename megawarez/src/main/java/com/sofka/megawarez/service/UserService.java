@@ -82,8 +82,8 @@ public class UserService implements IUser {
         return users;
     }
 
-    public Optional<User> findByUsername(String username){
-        return this.userRepository.findByUsername(username);
+    public User findByUsername(String username){
+        return this.userRepository.findByUsername(username).orElse(new User());
     }
 
     /**

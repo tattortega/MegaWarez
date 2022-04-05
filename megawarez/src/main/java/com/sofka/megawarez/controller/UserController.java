@@ -197,8 +197,8 @@ public class UserController {
         response.restart();
         try {
             log.info("Usuario a crear: {}", user);
-            Optional<User> u = this.userService.findByUsername(user.getUsername());
-            if (!u.isPresent()) {
+            User u = this.userService.findByUsername(user.getUsername());
+            if (u.getId() == null) {
                 response.data = userService.createUser(user);
                 response.message = "El usuario se ha registrado correctamente";
                 httpStatus = HttpStatus.CREATED;
@@ -226,9 +226,16 @@ public class UserController {
     public ResponseEntity<Response> login(@RequestBody LoginData loginData) {
         response.restart();
         try {
-            response.message = "Todo OK";
-            response.data = loginData.getToken();
-            httpStatus = HttpStatus.OK;
+            User u = this.userService.findByUsername(loginData.getUsername());
+            log.info("Usuario", u);
+            log.info("Usuario", loginData.getUsername());
+            if (u.getUsername() == null) {
+                response.message = "Todo OK";
+                response.data = loginData.getToken();
+                httpStatus = HttpStatus.OK;
+            } else {
+                response.message = "El usuario no se encuentra registrado";
+            }
         } catch (DataAccessException exception) {
             getErrorMessageForResponse(exception);
         } catch (Exception exception) {

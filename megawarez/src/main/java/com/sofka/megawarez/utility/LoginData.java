@@ -22,6 +22,14 @@ public class LoginData {
         this.password = createMD5(password);
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public String getToken() throws Exception {
         return createMD5(getUsername() + Instant.now());
     }

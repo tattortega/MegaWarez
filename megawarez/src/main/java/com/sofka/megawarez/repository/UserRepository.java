@@ -44,6 +44,14 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "update User use set use.password = :password, use.updatedAt = CURRENT_TIMESTAMP where use.id = :id")
     public void updatePassword(@Param(value = "id") Integer id, @Param(value = "password") String password);
 
+    /**
+     * Busca un usuario por el nombre
+     * @param username Nombre del usuario
+     * @return Optional
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
     public Optional<User> findByUsername(String username);
 
 }

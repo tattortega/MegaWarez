@@ -226,11 +226,9 @@ public class UserController {
     public ResponseEntity<Response> login(@RequestBody LoginData loginData) {
         response.restart();
         try {
-            User u = this.userService.findByUsername(loginData.getUsername());
-            log.info("Usuario", u);
-            log.info("Usuario", loginData.getUsername());
-            if (u.getUsername() == null) {
-                response.message = "Todo OK";
+            User user = this.userService.findByUsername(loginData.getUsername());
+            if (user.getUsername() != null) {
+                response.message = "Session iniciada";
                 response.data = loginData.getToken();
                 httpStatus = HttpStatus.OK;
             } else {

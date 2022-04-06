@@ -44,7 +44,7 @@ public interface IUser {
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public User createUser(User user);
+    public User createUser(User user) throws Exception;
 
     /**
      * Actualiza el nombre de un usuario basado en su identificador

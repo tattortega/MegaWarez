@@ -6,6 +6,7 @@ import com.sofka.megawarez.repository.DownloadRepository;
 import com.sofka.megawarez.repository.SessionRepository;
 import com.sofka.megawarez.repository.UserRepository;
 import com.sofka.megawarez.service.interfaces.IUser;
+import com.sofka.megawarez.utility.LoginData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +43,8 @@ public class UserService implements IUser {
     @Autowired
     private SessionRepository sessionRepository;
 
+    @Autowired
+    private LoginData loginData;
     /**
      * Devuelve una lista de Usuarios con todos usuarios del sistema
      *
@@ -82,8 +85,22 @@ public class UserService implements IUser {
         return users;
     }
 
+    /**
+     * Busca un usuario por el nombre
+     * @param username
+     * @return
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
     public User findByUsername(String username){
-        return this.userRepository.findByUsername(username).orElse(new User());
+        User users = null;
+        try {
+            users = userRepository.findByUsername(username).orElse(new User());
+        } catch (Exception exc) {
+            throw exc;
+        }
+        return users;
     }
 
     /**
@@ -97,10 +114,11 @@ public class UserService implements IUser {
      */
     @Override
     @Transactional
-    public User createUser(User user) {
+    public User createUser(User user) throws Exception {
         User users = null;
         try {
             user.setCreatedAt(Instant.now());
+            user.setPassword(loginData.setPassword(user.getPassword())); ;
             users = userRepository.save(user);
         } catch (Exception exc) {
             throw exc;

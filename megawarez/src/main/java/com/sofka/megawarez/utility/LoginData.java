@@ -1,6 +1,8 @@
 package com.sofka.megawarez.utility;
 
 import lombok.Data;
+import org.springframework.stereotype.Service;
+
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -14,12 +16,14 @@ import java.time.Instant;
  * @since 1.0.0
  */
 @Data
+@Service
 public class LoginData {
     private String username;
     private String password;
 
-    public void setPassword(String password) throws Exception {
+    public String setPassword(String password) throws Exception {
         this.password = createMD5(password);
+        return this.password;
     }
 
     public String getUsername() {

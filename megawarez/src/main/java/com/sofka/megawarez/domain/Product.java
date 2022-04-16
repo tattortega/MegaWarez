@@ -3,22 +3,15 @@ package com.sofka.megawarez.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Data;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import lombok.*;
+import org.hibernate.Hibernate;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -28,7 +21,10 @@ import java.util.List;
  * @author Ricardo Ortega <tattortega.28@gmail.com>
  * @since 1.0.0
  */
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Entity
 @Table(name = "product")
 public class Product implements Serializable {
@@ -55,6 +51,7 @@ public class Product implements Serializable {
             optional = false)
     @JoinColumn(name = "prd_subcategory_id", nullable = false)
     @JsonBackReference
+    @ToString.Exclude
     private Subcategory prdSubcategory;
 
     /**
@@ -87,4 +84,16 @@ public class Product implements Serializable {
     @JsonIgnore
     private List<Download> downloads = new ArrayList<>();
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Product product = (Product) o;
+        return id != null && Objects.equals(id, product.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

@@ -1,6 +1,7 @@
 package com.sofka.megawarez.controller;
 
 import com.sofka.megawarez.domain.Download;
+import com.sofka.megawarez.domain.Session;
 import com.sofka.megawarez.domain.User;
 import com.sofka.megawarez.service.UserService;
 import com.sofka.megawarez.utility.LoginData;
@@ -213,8 +214,50 @@ public class UserController {
         return new ResponseEntity(response, httpStatus);
     }
 
+
     /**
-     * Crea el token para el Usuario
+     * Index de session, responde con el listado de sessions
+     *
+     * @return Objeto Response en formato JSON
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    @GetMapping(path = "/api/v1/sessions")
+    public ResponseEntity<Response> sessions() {
+        response.restart();
+        try {
+            response.data = userService.getListSession();
+            httpStatus = HttpStatus.OK;
+        } catch (Exception exception) {
+            getErrorMessageInternal(exception);
+        }
+        return new ResponseEntity(response, httpStatus);
+    }
+
+    /**
+     * Obtiene una session segun el identificador
+     *
+     * @return Objeto Response en formato JSON
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     * @param id
+     */
+    @GetMapping(path = "/api/v1/session/{id}")
+    public ResponseEntity<Response> findSession(@PathVariable(value="id") Session id) {
+        response.restart();
+        try {
+            response.data = userService.findSession(id);
+            httpStatus = HttpStatus.OK;
+        } catch (Exception exception) {
+            getErrorMessageInternal(exception);
+        }
+        return new ResponseEntity(response, httpStatus);
+    }
+
+    /**
+     * Crea una session para el Usuario
      *
      * @param loginData
      * @return
@@ -223,14 +266,15 @@ public class UserController {
      * @since 1.0.0
      */
     @PostMapping(path = "/api/v1/login")
-    public ResponseEntity<Response> login(@RequestBody LoginData loginData) {
+    public ResponseEntity<Response> login(@RequestBody LoginData loginData, Session session) {
         response.restart();
         try {
             User user = this.userService.findByUsername(loginData.getUsername());
             if (user.getUsername() != null) {
                 response.message = "Session iniciada";
-                response.data = loginData.getToken();
+                response.data = loginData;
                 httpStatus = HttpStatus.OK;
+                userService.createSession(loginData, user, session);
             } else {
                 response.message = "El usuario no se encuentra registrado";
             }
@@ -265,6 +309,7 @@ public class UserController {
         }
         return new ResponseEntity(response, httpStatus);
     }
+
     /**
      * Actualiza el nombre de un usuario basado en su identificador
      *
@@ -277,6 +322,7 @@ public class UserController {
      */
     @PatchMapping(path = "/api/v1/user/{id}/username")
     public ResponseEntity<Response> updateUsername(
+            @RequestHeader ("Authorization") String authorization,
             @RequestBody User user,
             @PathVariable(value="id") Integer id
     ) {

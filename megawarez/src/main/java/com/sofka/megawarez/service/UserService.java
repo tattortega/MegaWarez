@@ -1,6 +1,7 @@
 package com.sofka.megawarez.service;
 
 import com.sofka.megawarez.domain.Download;
+import com.sofka.megawarez.domain.Session;
 import com.sofka.megawarez.domain.User;
 import com.sofka.megawarez.repository.DownloadRepository;
 import com.sofka.megawarez.repository.SessionRepository;
@@ -45,6 +46,7 @@ public class UserService implements IUser {
 
     @Autowired
     private LoginData loginData;
+
     /**
      * Devuelve una lista de Usuarios con todos usuarios del sistema
      *
@@ -118,7 +120,7 @@ public class UserService implements IUser {
         User users = null;
         try {
             user.setCreatedAt(Instant.now());
-            user.setPassword(loginData.setPassword(user.getPassword())); ;
+            user.setPassword(loginData.setPassword(user.getPassword()));
             users = userRepository.save(user);
         } catch (Exception exc) {
             throw exc;
@@ -161,10 +163,11 @@ public class UserService implements IUser {
      */
     @Override
     @Transactional
-    public User updatePassword(Integer id, User user) {
+    public User updatePassword(Integer id, User user) throws Exception {
         try {
             user.setId(id);
             user.setUpdatedAt(Instant.now());
+            user.setPassword(loginData.setPassword(user.getPassword()));
             userRepository.updatePassword(id, user.getPassword());
         } catch (Exception exc) {
             throw exc;
@@ -193,6 +196,69 @@ public class UserService implements IUser {
         }
     }
 
+    /**
+     * Devuelve una lista de Session del sistema
+     *
+     * @return
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    @Override
+    public List<Session> getListSession() {
+        return null;
+    }
+
+    /**
+     * Devuelve una session
+     *
+     * @return
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    @Override
+    public Optional<Session> findSession(Session session) {
+        return Optional.empty();
+    }
+
+    /**
+     * Crea una session para un  usuario en el sistema
+     *
+     * @param session Objeto de la session a crear
+     * @return Objeto de la session creado
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    @Override
+    public Session createSession(LoginData loginData, User user, Session session) throws Exception {
+        Session sessions = null;
+        try {
+            session.setCreatedAt(Instant.now());
+            session.setToken(loginData.getToken());
+            User id = userRepository.getById(user.getId());
+            session.setSesUser(id);
+            sessions = sessionRepository.save(session);
+        } catch (Exception exc) {
+            throw exc;
+        }
+        return sessions;
+    }
+
+    /**
+     * Borra una session del sistema
+     *
+     * @param id Identificación de la session a borrar
+     * @return Objeto de la session borrado
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    @Override
+    public Session deleteSession(Integer id) {
+        return null;
+    }
 
     /**
      * Devuelve una lista de Descargas del usuario

@@ -2,22 +2,13 @@ package com.sofka.megawarez.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Data;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import lombok.*;
+import org.hibernate.Hibernate;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Entidad del Usuario
@@ -26,7 +17,10 @@ import java.util.Set;
  * @author Ricardo Ortega <tattortega.28@gmail.com>
  * @since 1.0.0
  */
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Entity
 @Table(name = "user")
 public class User implements Serializable {
@@ -92,4 +86,16 @@ public class User implements Serializable {
     @JsonIgnore
     private Set<Session> sessions = new LinkedHashSet<>();
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        User user = (User) o;
+        return id != null && Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

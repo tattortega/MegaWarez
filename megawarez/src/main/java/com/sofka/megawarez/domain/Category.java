@@ -2,13 +2,15 @@ package com.sofka.megawarez.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Data;
+import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Entidad de la categoria
@@ -17,7 +19,10 @@ import java.util.List;
  * @author Ricardo Ortega <tattortega.28@gmail.com>
  * @since 1.0.0
  */
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Entity
 @Table(name = "category")
 public class Category implements Serializable {
@@ -58,4 +63,16 @@ public class Category implements Serializable {
     @JsonIgnore
     private List<Subcategory> subcategories = new ArrayList<>();
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Category category = (Category) o;
+        return id != null && Objects.equals(id, category.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

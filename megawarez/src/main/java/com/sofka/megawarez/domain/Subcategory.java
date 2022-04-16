@@ -3,13 +3,15 @@ package com.sofka.megawarez.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Data;
+import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Entidad de la subcategoria
@@ -18,7 +20,10 @@ import java.util.List;
  * @author Ricardo Ortega <tattortega.28@gmail.com>
  * @since 1.0.0
  */
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Entity
 @Table(name = "subcategory")
 public class Subcategory implements Serializable {
@@ -42,6 +47,7 @@ public class Subcategory implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Category.class, optional = false)
     @JoinColumn(name = "scat_category_id")
     @JsonBackReference
+    @ToString.Exclude
     private Category scatCategory;
 
     /**
@@ -67,4 +73,16 @@ public class Subcategory implements Serializable {
     @JsonIgnore
     private List<Product> products = new ArrayList<>();
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Subcategory that = (Subcategory) o;
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

@@ -1,19 +1,13 @@
 package com.sofka.megawarez.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import lombok.*;
+import org.hibernate.Hibernate;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Objects;
 
 /**
  * Entidad de la descarga
@@ -22,7 +16,10 @@ import java.time.Instant;
  * @author Ricardo Ortega <tattortega.28@gmail.com>
  * @since 1.0.0
  */
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Entity
 @Table(name = "download")
 public class Download implements Serializable {
@@ -47,6 +44,7 @@ public class Download implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = User.class, optional = false)
     @JoinColumn(name = "dwn_user_id")
     @JsonBackReference
+    @ToString.Exclude
     private User dwnUser;
 
     /**
@@ -55,6 +53,7 @@ public class Download implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Product.class, optional = false)
     @JoinColumn(name = "dwn_product_id", nullable = false)
     @JsonBackReference
+    @ToString.Exclude
     private Product dwnProduct;
 
     /**
@@ -63,4 +62,16 @@ public class Download implements Serializable {
     @Column(name = "dwn_created_at", nullable = false)
     private Instant createdAt;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Download download = (Download) o;
+        return id != null && Objects.equals(id, download.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

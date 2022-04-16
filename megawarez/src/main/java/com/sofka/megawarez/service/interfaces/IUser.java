@@ -1,7 +1,9 @@
 package com.sofka.megawarez.service.interfaces;
 
 import com.sofka.megawarez.domain.Download;
+import com.sofka.megawarez.domain.Session;
 import com.sofka.megawarez.domain.User;
+import com.sofka.megawarez.utility.LoginData;
 
 import java.util.List;
 import java.util.Optional;
@@ -68,7 +70,7 @@ public interface IUser {
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public User updatePassword(Integer id, User user);
+    public User updatePassword(Integer id, User user) throws Exception;
 
     /**
      * Borra un usuario del sistema basado en su identificador
@@ -81,6 +83,46 @@ public interface IUser {
      */
     User deleteUser(Integer id);
 
+    /**
+     * Devuelve una lista de Sesiones del sistema
+     *
+     * @return
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    public List<Session> getListSession();
+
+    /**
+     * Devuelve un usuario del sistema
+     *
+     * @return
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    public Optional<Session> findSession(Session session);
+
+    /**
+     * Crea una session para un usuario en el sistema
+     *
+     * @return Objeto de la session creado
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    public Session createSession(LoginData loginData, User user, Session session) throws Exception;
+
+    /**
+     * Borra una session del sistema basado en su identificador
+     *
+     * @param id Identificación de la session a borrar
+     * @return Objeto de la session borrado
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    public Session deleteSession(Integer id);
 
     /**
      * Devuelve una lista de Descargas del usuario

@@ -114,6 +114,25 @@ public class UserController {
         return new ResponseEntity(response, httpStatus);
     }
 
+    /**
+     * Busca un usuario por su id
+     *
+     * @return Objeto Response en formato JSON
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    @GetMapping(path = "/api/v1/user/{id}")
+    public ResponseEntity<Response> findUser(@PathVariable(value="id") User id) {
+        response.restart();
+        try {
+            response.data = userService.findUser(id);
+            httpStatus = HttpStatus.OK;
+        } catch (Exception exception) {
+            getErrorMessageInternal(exception);
+        }
+        return new ResponseEntity(response, httpStatus);
+    }
 
     /**
      * Administrador para la redirección al controllador /api/v1/users
@@ -236,7 +255,7 @@ public class UserController {
     }
 
     /**
-     * Obtiene una session segun el identificador
+     * Obtiene las sessiones de un usuario segun el identificador
      *
      * @return Objeto Response en formato JSON
      *
@@ -245,10 +264,10 @@ public class UserController {
      * @param id
      */
     @GetMapping(path = "/api/v1/session/{id}")
-    public ResponseEntity<Response> findSession(@PathVariable(value="id") Session id) {
+    public ResponseEntity<Response> findUserSession(@PathVariable(value="id") User id) {
         response.restart();
         try {
-            response.data = userService.findSession(id);
+            response.data = userService.findUser(id);
             httpStatus = HttpStatus.OK;
         } catch (Exception exception) {
             getErrorMessageInternal(exception);
@@ -328,6 +347,8 @@ public class UserController {
     ) {
         response.restart();
         try {
+            Session token = (Session) userService.findUserSession(user);
+            if (authorization == token.getToken())
             response.data = userService.updateUsername(id, user);
             httpStatus = HttpStatus.OK;
         } catch (DataAccessException exception) {
@@ -350,6 +371,7 @@ public class UserController {
      */
     @PatchMapping(path = "/api/v1/user/{id}/password")
     public ResponseEntity<Response> updatePassword(
+            @RequestHeader("Authorization") String authorization,
             @RequestBody User user,
             @PathVariable(value="id") Integer id
     ) {

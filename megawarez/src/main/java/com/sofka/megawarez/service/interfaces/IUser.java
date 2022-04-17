@@ -7,6 +7,7 @@ import com.sofka.megawarez.utility.LoginData;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Interface para el servicio de Usuario
@@ -94,14 +95,14 @@ public interface IUser {
     public List<Session> getListSession();
 
     /**
-     * Devuelve un usuario del sistema
+     * Devuelve las sesiones de un usuario del sistema
      *
      * @return
      *
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public Optional<Session> findSession(Session session);
+    public Set<Session> findUserSession(User user);
 
     /**
      * Crea una session para un usuario en el sistema

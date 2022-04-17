@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Clase tipo Servicio para el manejo de Usuarios
@@ -60,7 +61,7 @@ public class UserService implements IUser {
     public List<User> getListUser() {
         List<User> users = null;
         try {
-            users = (List<User>) userRepository.findAll();
+            users = userRepository.findAll();
         } catch (Exception exc) {
             throw exc;
         }
@@ -206,11 +207,17 @@ public class UserService implements IUser {
      */
     @Override
     public List<Session> getListSession() {
-        return null;
+        List<Session> sessions = null;
+        try {
+            sessions = sessionRepository.findAll();
+        } catch (Exception exc) {
+            throw exc;
+        }
+        return sessions;
     }
 
     /**
-     * Devuelve una session
+     * Devuelve las sesiones de un usuario del sistema
      *
      * @return
      *
@@ -218,8 +225,15 @@ public class UserService implements IUser {
      * @since 1.0.0
      */
     @Override
-    public Optional<Session> findSession(Session session) {
-        return Optional.empty();
+    @Transactional(readOnly = true)
+    public Set<Session> findUserSession(User user) {
+        Optional<User> users = Optional.empty();
+        try {
+            users = userRepository.findById(user.getId());
+        } catch (Exception exc) {
+            throw exc;
+        }
+        return users.get().getSessions();
     }
 
     /**
@@ -257,7 +271,13 @@ public class UserService implements IUser {
      */
     @Override
     public Session deleteSession(Integer id) {
-        return null;
+        var session = sessionRepository.findById(id);
+        if (session.isPresent()) {
+            sessionRepository.delete(session.get());
+            return session.get();
+        } else {
+            return null;
+        }
     }
 
     /**

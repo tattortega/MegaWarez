@@ -8,6 +8,7 @@ import com.sofka.megawarez.utility.LoginData;
 import com.sofka.megawarez.utility.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +22,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
 import java.sql.SQLException;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Controlador para el Usuario
@@ -267,7 +269,7 @@ public class UserController {
     public ResponseEntity<Response> findUserSession(@PathVariable(value="id") User id) {
         response.restart();
         try {
-            response.data = userService.findUser(id);
+            response.data = userService.findUserSession(id);
             httpStatus = HttpStatus.OK;
         } catch (Exception exception) {
             getErrorMessageInternal(exception);
@@ -320,6 +322,7 @@ public class UserController {
         try {
             response.message = "Todo OK - TOKEN";
             response.data = authorization.replace("Bearer ", "");
+            userService.getListSession();
             httpStatus = HttpStatus.OK;
         } catch (DataAccessException exception) {
             getErrorMessageForResponse(exception);
@@ -343,14 +346,21 @@ public class UserController {
     public ResponseEntity<Response> updateUsername(
             @RequestHeader ("Authorization") String authorization,
             @RequestBody User user,
-            @PathVariable(value="id") Integer id
+            @PathVariable(value="id") User id
     ) {
         response.restart();
         try {
-            Session token = (Session) userService.findUserSession(user);
-            if (authorization == token.getToken())
-            response.data = userService.updateUsername(id, user);
-            httpStatus = HttpStatus.OK;
+            Set<Session> tokens = userService.findUserSession(id);
+            List<Session> users = new ArrayList<>(tokens);
+            if (!users.isEmpty()) {
+                response.data = userService.updateUsername(users.get(1).getSesUser().getId(), user);
+                response.message = "Nombre de usuario actualizado";
+                httpStatus = HttpStatus.OK;
+            } else {
+                response.error = true;
+                response.message = "No existe token activo";
+                httpStatus = HttpStatus.BAD_REQUEST;
+            }
         } catch (DataAccessException exception) {
             getErrorMessageForResponse(exception);
         } catch (Exception exception) {
@@ -378,6 +388,7 @@ public class UserController {
         response.restart();
         try {
             response.data = userService.updatePassword(id, user);
+            response.message = "Contraseña de usuario actualizado";
             httpStatus = HttpStatus.OK;
         } catch (DataAccessException exception) {
             getErrorMessageForResponse(exception);

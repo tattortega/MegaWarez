@@ -293,7 +293,7 @@ public class UserService implements IUser {
     public List<Download> getListDownload() {
         List<Download> downloads = null;
         try {
-            downloads = (List<Download>) downloadRepository.findAll();
+            downloads = downloadRepository.findAll();
         } catch (Exception exc) {
             throw exc;
         }

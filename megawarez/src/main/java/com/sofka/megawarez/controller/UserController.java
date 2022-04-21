@@ -8,10 +8,10 @@ import com.sofka.megawarez.utility.LoginData;
 import com.sofka.megawarez.utility.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -278,6 +277,49 @@ public class UserController {
     }
 
     /**
+     * Borra una sesion de usuario del sistema
+     *
+     * @param id Identificador de la sesion de usuario a borrar
+     * @return Objeto Response en formato JSON
+     *
+     * @author Ricardo Ortega <tattortega.28@gmail.com>
+     * @since 1.0.0
+     */
+    @DeleteMapping(path = "/api/v1/session/{id}")
+    public ResponseEntity<Response> deleteUserSession(
+            @RequestHeader("Authorization") String authorization,
+            @PathVariable(value="id") User id) {
+        response.restart();
+        try {
+            Set<Session> tokens = userService.findUserSession(id);
+            List<Session> userToken = new ArrayList<>(tokens);
+            boolean match = false;
+            for (Session token: userToken) {
+                if (Objects.equals(token.getToken(), authorization)) {
+                    response.data = userService.deleteSession(token.getId());
+                    response.message = "La session fue removida exitosamente";
+                    httpStatus = HttpStatus.OK;
+                    match = true;
+                }
+            }
+            if (!match) {
+                response.error = false;
+                response.message = "No existe token activo";
+                httpStatus = HttpStatus.UNAUTHORIZED;
+            } else if (response.data == null) {
+                response.error = true;
+                response.message = "La session no existe";
+                httpStatus = HttpStatus.NOT_FOUND;
+            }
+        } catch (DataAccessException exception) {
+            getErrorMessageForResponse(exception);
+        } catch (Exception exception) {
+            getErrorMessageInternal(exception);
+        }
+        return new ResponseEntity(response, httpStatus);
+    }
+
+    /**
      * Crea una session para el Usuario
      *
      * @param loginData
@@ -351,15 +393,24 @@ public class UserController {
         response.restart();
         try {
             Set<Session> tokens = userService.findUserSession(id);
-            List<Session> users = new ArrayList<>(tokens);
-            if (!users.isEmpty()) {
-                response.data = userService.updateUsername(users.get(1).getSesUser().getId(), user);
-                response.message = "Nombre de usuario actualizado";
-                httpStatus = HttpStatus.OK;
-            } else {
+            List<Session> userToken = new ArrayList<>(tokens);
+            boolean match = false;
+            for (Session token: userToken) {
+                if (Objects.equals(token.getToken(), authorization)) {
+                    response.data = userService.updateUsername(userToken.get(0).getSesUser().getId(), user);
+                    response.message = "Nombre de usuario actualizado";
+                    httpStatus = HttpStatus.OK;
+                    match = true;
+                }
+            }
+            if (!match) {
                 response.error = true;
                 response.message = "No existe token activo";
-                httpStatus = HttpStatus.BAD_REQUEST;
+                httpStatus = HttpStatus.UNAUTHORIZED;
+            } else if (response.data == null) {
+                response.error = true;
+                response.message = "La session no existe";
+                httpStatus = HttpStatus.NOT_FOUND;
             }
         } catch (DataAccessException exception) {
             getErrorMessageForResponse(exception);
@@ -383,13 +434,30 @@ public class UserController {
     public ResponseEntity<Response> updatePassword(
             @RequestHeader("Authorization") String authorization,
             @RequestBody User user,
-            @PathVariable(value="id") Integer id
+            @PathVariable(value="id") User id
     ) {
         response.restart();
         try {
-            response.data = userService.updatePassword(id, user);
-            response.message = "Contraseña de usuario actualizado";
-            httpStatus = HttpStatus.OK;
+            Set<Session> tokens = userService.findUserSession(id);
+            List<Session> userToken = new ArrayList<>(tokens);
+            boolean match = false;
+            for (Session token: userToken) {
+                if (Objects.equals(token.getToken(), authorization)) {
+                    response.data = userService.updatePassword(userToken.get(0).getId(), user);
+                    response.message = "Contraseña de usuario actualizado";
+                    httpStatus = HttpStatus.OK;
+                    match = true;
+                }
+            }
+            if (!match) {
+                response.error = true;
+                response.message = "No existe token activo";
+                httpStatus = HttpStatus.UNAUTHORIZED;
+            } else if (response.data == null) {
+                response.error = true;
+                response.message = "La session no existe";
+                httpStatus = HttpStatus.NOT_FOUND;
+            }
         } catch (DataAccessException exception) {
             getErrorMessageForResponse(exception);
         } catch (Exception exception) {
@@ -409,16 +477,37 @@ public class UserController {
      * @since 1.0.0
      */
     @DeleteMapping(path = "/api/v1/user/{id}")
-    public ResponseEntity<Response> deleteUser(@PathVariable(value="id") Integer id) {
+    public ResponseEntity<Response> deleteUser(
+            @RequestHeader("Authorization") String authorization,
+            @PathVariable(value="id") User id) {
         response.restart();
         try {
-            response.data = userService.deleteUser(id);
-            if (response.data == null) {
+            Optional<User> us = userService.findUser(id);
+            if (us.isEmpty()){
+                response.error = true;
                 response.message = "El usuario no existe";
                 httpStatus = HttpStatus.NOT_FOUND;
             } else {
-                response.message = "El usuario fue removido exitosamente";
-                httpStatus = HttpStatus.OK;
+                Set<Session> tokens = userService.findUserSession(id);
+                List<Session> userToken = new ArrayList<>(tokens);
+                boolean match = false;
+                for (Session token: userToken) {
+                    if (Objects.equals(token.getToken(), authorization)) {
+                        response.data = userService.deleteUser(userToken.get(0).getSesUser().getId());
+                        response.message = "El usuario fue removido exitosamente";
+                        httpStatus = HttpStatus.OK;
+                        match = true;
+                    }
+                }
+                if (!match) {
+                    response.error = true;
+                    response.message = "No existe token activo";
+                    httpStatus = HttpStatus.UNAUTHORIZED;
+                } else if (response.data == null) {
+                    response.error = true;
+                    response.message = "El usuario no existe";
+                    httpStatus = HttpStatus.NOT_FOUND;
+                }
             }
         } catch (DataAccessException exception) {
             getErrorMessageForResponse(exception);
@@ -443,6 +532,7 @@ public class UserController {
         response.restart();
         try {
             response.data = userService.getListDownload();
+            response.message= "Lista de descarga";
             httpStatus = HttpStatus.OK;
         } catch (Exception exception) {
             getErrorMessageInternal(exception);
@@ -460,11 +550,26 @@ public class UserController {
      * @param id
      */
     @GetMapping(path = "/api/v1/download/{id}")
-    public ResponseEntity<Response> findDownload(@PathVariable(value="id") Download id) {
+    public ResponseEntity<Response> findDownload(
+            @RequestHeader("Authorization") String authorization,
+            @PathVariable(value="id") Download id) {
         response.restart();
         try {
-            response.data = userService.findDownload(id);
-            httpStatus = HttpStatus.OK;
+            List<Session> tokens = userService.getListSession();
+            boolean match = false;
+            for (Session token: tokens) {
+                if (Objects.equals(token.getToken(), authorization)) {
+                    response.data = userService.findDownload(id);
+                    response.message = "Lista de descargas";
+                    httpStatus = HttpStatus.OK;
+                    match = true;
+                }
+            }
+            if (!match) {
+                response.error = true;
+                response.message = "No existe token activo";
+                httpStatus = HttpStatus.UNAUTHORIZED;
+            }
         } catch (Exception exception) {
             getErrorMessageInternal(exception);
         }
@@ -481,12 +586,28 @@ public class UserController {
      * @since 1.0.0
      */
     @PostMapping(path = "/api/v1/download")
-    public ResponseEntity<Response> createDownload(@RequestBody Download download) {
+    public ResponseEntity<Response> createDownload(
+            @RequestHeader("Authorization") String authorization,
+            @RequestBody Download download) {
         response.restart();
         try {
-            log.info("Descarga a crear: {}", download);
-            response.data = userService.createDownload(download);
-            httpStatus = HttpStatus.CREATED;
+            Set<Session> tokens = userService.findUserSession(download.getDwnUser());
+            List<Session> userToken = new ArrayList<>(tokens);
+            boolean match = false;
+            for (Session token: userToken) {
+                if (Objects.equals(token.getToken(), authorization)) {
+                    log.info("Descarga a crear: {}", download);
+                    response.data = userService.createDownload(download);
+                    response.message= "Descarga realizada";
+                    httpStatus = HttpStatus.CREATED;
+                    match = true;
+                }
+            }
+            if (!match) {
+                response.error = true;
+                response.message = "No existe token activo";
+                httpStatus = HttpStatus.UNAUTHORIZED;
+            }
         } catch (DataAccessException exception) {
             getErrorMessageForResponse(exception);
         } catch (Exception exception) {

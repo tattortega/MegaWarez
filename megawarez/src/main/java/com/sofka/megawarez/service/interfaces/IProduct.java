@@ -24,7 +24,7 @@ public interface IProduct {
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public List<Product> getListProducts();
+    List<Product> getListProducts();
 
     /**
      * Devuelve un producto del sistema
@@ -34,7 +34,7 @@ public interface IProduct {
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public Optional<Product> findProduct(Product product);
+    Optional<Product> findProduct(Product product);
 
     /**
      * Crea un producto en el sistema
@@ -45,7 +45,7 @@ public interface IProduct {
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public Product createProduct(Product product);
+    Product createProduct(Product product);
 
     /**
      * Devuelve una lista de productos del sistema ordenados por el campo indicado
@@ -58,7 +58,7 @@ public interface IProduct {
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public List<Product> getProductOrdered(String field, Sort.Direction order);
+    List<Product> getProductOrdered(String field, Sort.Direction order);
 
     /**
      * Busca un dato dado entre el nombre de un producto
@@ -69,7 +69,7 @@ public interface IProduct {
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public List<Product> searchProduct(String dataToSearch);
+    List<Product> searchProduct(String dataToSearch);
 
     /**
      * Actualiza el nombre de un producto basado en su identificador
@@ -81,7 +81,7 @@ public interface IProduct {
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public Product updateProduct(Integer id, Product product);
+    Product updateProduct(Integer id, Product product);
 
     /**
      * Borra un producto del sistema basado en su identificador
@@ -103,7 +103,7 @@ public interface IProduct {
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public List<Category> getListCategory();
+    List<Category> getListCategory();
 
     /**
      * Devuelve una categoria del sistema
@@ -113,7 +113,7 @@ public interface IProduct {
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public Optional<Category> findCategory(Category category);
+    Optional<Category> findCategory(Category category);
 
     /**
      * Crea una categoria en el sistema
@@ -124,7 +124,7 @@ public interface IProduct {
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public Category createCategory(Category category);
+    Category createCategory(Category category);
 
     /**
      * Devuelve una lista de categorias con todos categorias del sistema ordenados por el campo indicado
@@ -137,7 +137,7 @@ public interface IProduct {
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public List<Category> getCategoryOrdered(String field, Sort.Direction order);
+    List<Category> getCategoryOrdered(String field, Sort.Direction order);
 
     /**
      * Borra una categoria del sistema basado en su identificador
@@ -159,7 +159,7 @@ public interface IProduct {
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public List<Subcategory> getListSubcategory();
+    List<Subcategory> getListSubcategory();
 
     /**
      * Devuelve una subcategoria del sistema
@@ -169,7 +169,7 @@ public interface IProduct {
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public Optional<Subcategory> findSubcategory(Subcategory subcategory);
+    Optional<Subcategory> findSubcategory(Subcategory subcategory);
 
     /**
      * Crea una subcategoria en el sistema
@@ -180,7 +180,7 @@ public interface IProduct {
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public Subcategory createSubcategory(Subcategory subcategory);
+    Subcategory createSubcategory(Subcategory subcategory);
 
     /**
      * Devuelve una lista de subcategorias con todos subcategorias del sistema ordenados por el campo indicado
@@ -193,7 +193,7 @@ public interface IProduct {
      * @author Ricardo Ortega <tattortega.28@gmail.com>
      * @since 1.0.0
      */
-    public List<Subcategory> getSubcategoryOrdered(String field, Sort.Direction order);
+    List<Subcategory> getSubcategoryOrdered(String field, Sort.Direction order);
 
     /**
      * Borra una subcategoria del sistema basado en su identificador

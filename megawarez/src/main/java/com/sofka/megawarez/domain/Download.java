@@ -1,6 +1,9 @@
 package com.sofka.megawarez.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -52,7 +55,7 @@ public class Download implements Serializable {
      */
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = Product.class, optional = false)
     @JoinColumn(name = "dwn_product_id", nullable = false)
-    @JsonBackReference
+    @JsonBackReference(value = "second")
     @ToString.Exclude
     private Product dwnProduct;
 

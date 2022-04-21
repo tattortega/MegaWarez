@@ -80,7 +80,7 @@ public class Product implements Serializable {
             targetEntity = Download.class,
             cascade = CascadeType.REMOVE,
             mappedBy = "dwnProduct")
-    @JsonManagedReference
+    @JsonManagedReference(value = "second")
     @JsonIgnore
     private List<Download> downloads = new ArrayList<>();
 

@@ -2,8 +2,10 @@ package com.sofka.megawarez.controller;
 
 import com.sofka.megawarez.domain.Category;
 import com.sofka.megawarez.domain.Product;
+import com.sofka.megawarez.domain.Session;
 import com.sofka.megawarez.domain.Subcategory;
 import com.sofka.megawarez.service.ProductService;
+import com.sofka.megawarez.service.UserService;
 import com.sofka.megawarez.utility.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Controlador para el Producto
@@ -27,6 +33,11 @@ import java.sql.SQLException;
 @RestController
 public class ProductController {
 
+    /**
+     * Servicio para el manejo del Usuario
+     */
+    @Autowired
+    private UserService userService;
 
     /**
      * Servicio para el manejo de Producto
@@ -122,12 +133,27 @@ public class ProductController {
      * @since 1.0.0
      */
     @PostMapping(path = "/api/v1/product")
-    public ResponseEntity<Response> createProduct(@RequestBody Product product) {
+    public ResponseEntity<Response> createProduct(
+            @RequestHeader("Authorization") String authorization,
+            @RequestBody Product product) {
         response.restart();
         try {
-            log.info("Producto a crear: {}", product);
-            response.data = productService.createProduct(product);
-            httpStatus = HttpStatus.CREATED;
+            List<Session> tokens = userService.getListSession();
+            boolean match = false;
+            for (Session token: tokens) {
+                if (Objects.equals(token.getToken(), authorization)) {
+                    log.info("Producto a crear: {}", product);
+                    response.data = productService.createProduct(product);
+                    httpStatus = HttpStatus.CREATED;
+                    response.message= "Producto creado";
+                    match = true;
+                }
+            }
+            if (!match) {
+                response.error = true;
+                response.message = "No existe token activo";
+                httpStatus = HttpStatus.UNAUTHORIZED;
+            }
         } catch (DataAccessException exception) {
             getErrorMessageForResponse(exception);
         } catch (Exception exception) {
@@ -148,13 +174,28 @@ public class ProductController {
      */
     @PatchMapping(path = "/api/v1/product/{id}/product")
     public ResponseEntity<Response> updateProduct(
+            @RequestHeader("Authorization") String authorization,
             @RequestBody Product product,
             @PathVariable(value="id") Integer id
     ) {
         response.restart();
         try {
-            response.data = productService.updateProduct(id, product);
-            httpStatus = HttpStatus.OK;
+            List<Session> tokens = userService.getListSession();
+            boolean match = false;
+            for (Session token: tokens) {
+                if (Objects.equals(token.getToken(), authorization)) {
+                    log.info("Producto a actualizar: {}", product);
+                    response.data = productService.updateProduct(id, product);
+                    httpStatus = HttpStatus.OK;
+                    response.message= "Producto actualizado";
+                    match = true;
+                }
+            }
+            if (!match) {
+                response.error = true;
+                response.message = "No existe token activo";
+                httpStatus = HttpStatus.UNAUTHORIZED;
+            }
         } catch (DataAccessException exception) {
             getErrorMessageForResponse(exception);
         } catch (Exception exception) {
@@ -175,13 +216,28 @@ public class ProductController {
      */
     @PatchMapping(path = "/api/v1/product/{id}/subcategory")
     public ResponseEntity<Response> updateProductSubcategory(
+            @RequestHeader("Authorization") String authorization,
             @RequestBody Product product,
             @PathVariable(value="id") Integer id
     ) {
         response.restart();
         try {
-            response.data = productService.updateProduct(id, product);
-            httpStatus = HttpStatus.OK;
+            List<Session> tokens = userService.getListSession();
+            boolean match = false;
+            for (Session token: tokens) {
+                if (Objects.equals(token.getToken(), authorization)) {
+                    log.info("Subcategoria de producto a actualizar: {}", product);
+                    response.data = productService.updateProduct(id, product);
+                    httpStatus = HttpStatus.OK;
+                    response.message= "Subcategoria de producto actualizado";
+                    match = true;
+                }
+            }
+            if (!match) {
+                response.error = true;
+                response.message = "No existe token activo";
+                httpStatus = HttpStatus.UNAUTHORIZED;
+            }
         } catch (DataAccessException exception) {
             getErrorMessageForResponse(exception);
         } catch (Exception exception) {
@@ -201,16 +257,29 @@ public class ProductController {
      * @since 1.0.0
      */
     @DeleteMapping(path = "/api/v1/product/{id}")
-    public ResponseEntity<Response> deleteProduct(@PathVariable(value="id") Integer id) {
+    public ResponseEntity<Response> deleteProduct(
+            @RequestHeader("Authorization") String authorization,
+            @PathVariable(value="id") Integer id) {
         response.restart();
         try {
-            response.data = productService.deleteProduct(id);
+            List<Session> tokens = userService.getListSession();
+            boolean match = false;
+            for (Session token: tokens) {
+                if (Objects.equals(token.getToken(), authorization)) {
+                    response.data = productService.deleteProduct(id);
+                    httpStatus = HttpStatus.OK;
+                    response.message= "Producto eliminado";
+                    match = true;
+                }
+            }
+            if (!match) {
+                response.error = true;
+                response.message = "No existe token activo";
+                httpStatus = HttpStatus.UNAUTHORIZED;
+            }
             if (response.data == null) {
                 response.message = "El producto no existe";
                 httpStatus = HttpStatus.NOT_FOUND;
-            } else {
-                response.message = "El producto fue removido exitosamente";
-                httpStatus = HttpStatus.OK;
             }
         } catch (DataAccessException exception) {
             getErrorMessageForResponse(exception);
@@ -233,13 +302,31 @@ public class ProductController {
      */
     @GetMapping(path = "/api/v1/products/orderby/{orderBy}/{order}")
     public ResponseEntity<Response> indexOrderBy(
+            @RequestHeader("Authorization") String authorization,
             @PathVariable(value="orderBy") String orderBy,
             @PathVariable(value="order") Sort.Direction order
     ) {
         response.restart();
         try {
-            response.data = productService.getProductOrdered(orderBy, order);
-            httpStatus = HttpStatus.OK;
+            List<Session> tokens = userService.getListSession();
+            boolean match = false;
+            for (Session token: tokens) {
+                if (Objects.equals(token.getToken(), authorization)) {
+                    response.data = productService.getProductOrdered(orderBy, order);
+                    httpStatus = HttpStatus.OK;
+                    response.message= "Producto ordenados";
+                    match = true;
+                }
+            }
+            if (!match) {
+                response.error = true;
+                response.message = "No existe token activo";
+                httpStatus = HttpStatus.UNAUTHORIZED;
+            }
+            if (response.data == null) {
+                response.message = "No existen productos";
+                httpStatus = HttpStatus.NOT_FOUND;
+            }
         } catch (Exception exception) {
             getErrorMessageInternal(exception);
         }
@@ -257,12 +344,30 @@ public class ProductController {
      */
     @GetMapping(path = "/api/v1/search/product/{dataToSearch}")
     public ResponseEntity<Response> searchProduct(
+            @RequestHeader("Authorization") String authorization,
             @PathVariable(value="dataToSearch") String dataToSearch
     ) {
         response.restart();
         try {
-            response.data = productService.searchProduct(dataToSearch);
-            httpStatus = HttpStatus.OK;
+            List<Session> tokens = userService.getListSession();
+            boolean match = false;
+            for (Session token: tokens) {
+                if (Objects.equals(token.getToken(), authorization)) {
+                    response.data = productService.searchProduct(dataToSearch);
+                    httpStatus = HttpStatus.OK;
+                    response.message= "Productos encontrados";
+                    match = true;
+                }
+            }
+            if (!match) {
+                response.error = true;
+                response.message = "No existe token activo";
+                httpStatus = HttpStatus.UNAUTHORIZED;
+            }
+            if (response.data == null) {
+                response.message = "No existen productos";
+                httpStatus = HttpStatus.NOT_FOUND;
+            }
         } catch (Exception exception) {
             getErrorMessageInternal(exception);
         }

@@ -314,7 +314,7 @@ public class ProductController {
                 if (Objects.equals(token.getToken(), authorization)) {
                     response.data = productService.getProductOrdered(orderBy, order);
                     httpStatus = HttpStatus.OK;
-                    response.message= "Producto ordenados";
+                    response.message= "Productos ordenados";
                     match = true;
                 }
             }

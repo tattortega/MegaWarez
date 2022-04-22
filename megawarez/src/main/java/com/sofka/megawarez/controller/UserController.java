@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -108,6 +107,7 @@ public class UserController {
         response.restart();
         try {
             response.data = userService.getListUser();
+            response.message = "Lista de usuarios";
             httpStatus = HttpStatus.OK;
         } catch (Exception exception) {
             getErrorMessageInternal(exception);
@@ -248,6 +248,7 @@ public class UserController {
         response.restart();
         try {
             response.data = userService.getListSession();
+            response.message = "Sesiones activas";
             httpStatus = HttpStatus.OK;
         } catch (Exception exception) {
             getErrorMessageInternal(exception);
@@ -269,6 +270,7 @@ public class UserController {
         response.restart();
         try {
             response.data = userService.findUserSession(id);
+            response.message = "Usuario";
             httpStatus = HttpStatus.OK;
         } catch (Exception exception) {
             getErrorMessageInternal(exception);
@@ -528,12 +530,42 @@ public class UserController {
      * @since 1.0.0
      */
     @GetMapping(path = "/api/v1/downloads")
-    public ResponseEntity<Response> download() {
+    public ResponseEntity<Response> download(@RequestHeader("Authorization") String authorization) {
         response.restart();
         try {
-            response.data = userService.getListDownload();
-            response.message= "Lista de descarga";
-            httpStatus = HttpStatus.OK;
+            List<Session> tokens = userService.getListSession();
+            boolean match = false;
+            for (Session token: tokens) {
+                if (Objects.equals(token.getToken(), authorization)) {
+                    List<Download> downloads = userService.getListDownload();
+                    List<Map<String, String>> downloads1 = new ArrayList<>();
+                    for (Download x: downloads) {
+                        Integer idDownload = x.getId();
+                        String productDownload = x.getDwnProduct().getProduct();
+                        String userDownload = x.getDwnUser().getUsername();
+                        String createdDownload = x.getCreatedAt().toString();
+                        Map<String, String> map = new LinkedHashMap<>();
+                        map.put("id", String.valueOf(idDownload));
+                        map.put("product", productDownload);
+                        map.put("user", userDownload);
+                        map.put("createdAt", createdDownload);
+                        downloads1.add(map);
+                    }
+                    response.data = downloads1;
+                    response.message= "Lista de descargas";
+                    httpStatus = HttpStatus.OK;
+                    match = true;
+                }
+            }
+            if (!match) {
+                response.error = true;
+                response.message = "No existe token activo";
+                httpStatus = HttpStatus.UNAUTHORIZED;
+            } else if (response.data == null) {
+                response.error = true;
+                response.message = "El usuario no existe";
+                httpStatus = HttpStatus.NOT_FOUND;
+            }
         } catch (Exception exception) {
             getErrorMessageInternal(exception);
         }
@@ -559,7 +591,17 @@ public class UserController {
             boolean match = false;
             for (Session token: tokens) {
                 if (Objects.equals(token.getToken(), authorization)) {
-                    response.data = userService.findDownload(id);
+                    List<Download> downloads = userService.findDownload(id).stream().toList();
+                    Map<String, String> downloads1 = new LinkedHashMap<>();
+                    Integer idDownload = downloads.get(0).getId();
+                    String productDownload = downloads.get(0).getDwnProduct().getProduct();
+                    String userDownload = downloads.get(0).getDwnUser().getUsername();
+                    String createdDownload = downloads.get(0).getCreatedAt().toString();
+                    downloads1.put("id", String.valueOf(idDownload));
+                    downloads1.put("product", productDownload);
+                    downloads1.put("user", userDownload);
+                    downloads1.put("createdAt", createdDownload);
+                    response.data = downloads1;
                     response.message = "Lista de descargas";
                     httpStatus = HttpStatus.OK;
                     match = true;
